@@ -1,9 +1,8 @@
 #include <SFML/Graphics.hpp>
+#include "Board.h"
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape circle(100.f);
-    circle.setFillColor(sf::Color::Green);
+    sf::RenderWindow window(sf::VideoMode(800, 572), "Minesweeper");
 
     while (window.isOpen()) {
         sf::Event event;
@@ -12,8 +11,9 @@ int main() {
                 window.close();
         }
 
-        window.clear();
-        window.draw(circle);
+        window.clear(sf::Color(200, 200, 200));
+        Board board(16, 25, 50);
+        board.InitializeBoard(window);
         window.display();
     }
 
