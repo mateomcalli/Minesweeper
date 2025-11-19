@@ -1,12 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include "Tile.h"
 
-void Tile::DrawTile(sf::RenderWindow &window, unsigned int xPos, unsigned int yPos) {
-    sf::Texture tileImg;
-    tileImg.loadFromFile("images/tile_hidden.png");
-
+void Tile::DrawTile(sf::RenderWindow &window, sf::Texture &texture, unsigned int xPos, unsigned int yPos) {
     sf::Sprite sprite;
-    sprite.setTexture(tileImg);
+    sprite.setTexture(texture);
     sprite.setPosition(xPos, yPos);
     window.draw(sprite);
+}
+
+void Tile::LeftClick() {
+    if (_isHidden) {
+        if (!_hasMine) {
+            _isHidden = false;
+        }
+    }
 }
