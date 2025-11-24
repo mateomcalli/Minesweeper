@@ -33,7 +33,9 @@ int main() {
                 unsigned int xPos = mousePos.x/32;
                 unsigned int yPos = mousePos.y/32;
 
-                if (yPos < 10000) board.FindTile(xPos, yPos).LeftClick();
+                if (xPos >= cols || yPos >= rows) {
+                    continue;
+                } else board.FindTile(xPos, yPos).LeftClick();
             }
 
             else if (event.type == sf::Event::MouseButtonPressed &&
@@ -45,7 +47,9 @@ int main() {
                 unsigned int xPos = mousePos.x/32;
                 unsigned int yPos = mousePos.y/32;
 
-                if (yPos < 10000) board.FindTile(xPos, yPos).RightClick();
+                if (xPos >= cols || yPos >= rows) {
+                    continue;
+                } else board.FindTile(xPos, yPos).RightClick();
             }
         }
 

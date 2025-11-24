@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 struct Tile {
+    unsigned int id;
     bool _isHidden = true;
     bool _isFlagged = false;
     bool _hasMine = false;

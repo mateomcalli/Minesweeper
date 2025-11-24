@@ -7,6 +7,7 @@ class Board {
     unsigned int _cols;
     unsigned int _mines;
     unsigned int _mineCounter;
+    std::vector<unsigned int> _list;
     std::vector<std::vector<Tile>> _tiles;
 
     // textures

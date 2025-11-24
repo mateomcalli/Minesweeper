@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <random>
 #include <vector>
 #include "Board.h"
 #include "Tile.h"
@@ -8,6 +9,20 @@ Board::Board(unsigned int rows, unsigned int cols, unsigned int mines) {
     _cols = cols;
     _mines = mines;
     _mineCounter = mines;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::vector<unsigned int> tempList;
+
+    for (unsigned int i = 1; i < rows*cols + 1; i++) {
+        tempList.push_back(i);
+    }
+
+    std::shuffle(tempList.begin(), tempList.end(), gen);
+    for (unsigned int i = 0; i < mines; i++) {
+        _list.push_back(tempList[i]);
+    }
+
 
     _tiles.resize(_rows);
     for (unsigned int i = 0; i < _rows; i++) {
@@ -43,9 +58,16 @@ void Board::InitializeBoard() {
     // create game board and tile objects
     unsigned int xPos = 0;
     unsigned int yPos = 0;
+    unsigned int counter = 0;
     for (unsigned int i = 0; i < _rows; i++) {
         for (unsigned int j = 0; j < _cols; j++) {
             Tile newTile;
+            counter++;
+            newTile.id = counter;
+
+            auto iter = std::find(_list.begin(), _list.end(), newTile.id);
+            if (iter != _list.end()) newTile._hasMine = true;
+
             _tiles[i][j] = newTile;
             xPos += 32;
         }
@@ -58,6 +80,9 @@ void Board::DrawBoard(sf::RenderWindow &window) {
     for (unsigned int i = 0; i < _tiles.size(); i++) {
         for (unsigned int j = 0; j < _tiles[i].size(); j++) {
             _tiles[i][j].DrawTexture(window, _tiles[i][j]._isHidden ? hiddenTile : revealedTile, j*32, i*32);
+            // if (_tiles[i][j]._hasMine) {
+            //     _tiles[i][j].DrawTexture(window, mine, j*32, i*32);
+            // }
             if (_tiles[i][j]._isFlagged) {
                 _tiles[i][j].DrawTexture(window, flag, j*32, i*32);
             }
