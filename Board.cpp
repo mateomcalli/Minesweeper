@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <random>
 #include <vector>
+#include <iostream>
 #include "Board.h"
 #include "Tile.h"
 
@@ -12,19 +13,19 @@ Board::Board(unsigned int rows, unsigned int cols, unsigned int mines) {
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::vector<unsigned int> tempList;
 
-    for (unsigned int i = 1; i < rows*cols + 1; i++) {
-        tempList.push_back(i);
-    }
-
-    std::shuffle(tempList.begin(), tempList.end(), gen);
     for (unsigned int i = 0; i < mines; i++) {
-        _list.push_back(tempList[i]);
+        boolList.push_back(true);
+    }
+    for (unsigned int i = mines; i < rows*cols; i++) {
+        boolList.push_back(false);
     }
 
+    std::shuffle(boolList.begin(), boolList.end(), gen);
 
-    _tiles.resize(_rows);
+
+    _tiles.resize(_rows); // sets size of the outer vector to amount of rows
+    // sets size of the inner vectors to amount of cols
     for (unsigned int i = 0; i < _rows; i++) {
         _tiles[i].resize(_cols);
     }
@@ -62,14 +63,13 @@ void Board::InitializeBoard() {
     for (unsigned int i = 0; i < _rows; i++) {
         for (unsigned int j = 0; j < _cols; j++) {
             Tile newTile;
-            counter++;
             newTile.id = counter;
 
-            auto iter = std::find(_list.begin(), _list.end(), newTile.id);
-            if (iter != _list.end()) newTile._hasMine = true;
+            if (boolList[newTile.id]) newTile._hasMine = true;
 
             _tiles[i][j] = newTile;
             xPos += 32;
+            counter++;
         }
         xPos = 0;
         yPos += 32;
@@ -80,16 +80,19 @@ void Board::DrawBoard(sf::RenderWindow &window) {
     for (unsigned int i = 0; i < _tiles.size(); i++) {
         for (unsigned int j = 0; j < _tiles[i].size(); j++) {
             _tiles[i][j].DrawTexture(window, _tiles[i][j]._isHidden ? hiddenTile : revealedTile, j*32, i*32);
-            // if (_tiles[i][j]._hasMine) {
-            //     _tiles[i][j].DrawTexture(window, mine, j*32, i*32);
-            // }
             if (_tiles[i][j]._isFlagged) {
                 _tiles[i][j].DrawTexture(window, flag, j*32, i*32);
+            }
+            if (_tiles[i][j]._hasMine) {
+                _tiles[i][j].DrawTexture(window, mine, j*32, i*32);
             }
         }
     }
 }
 
 Tile& Board::FindTile(unsigned int xPos, unsigned int yPos) {
+    std::cout << yPos << std::endl;
+    std::cout << xPos << std::endl;
+    std::cout << _tiles[yPos][xPos].id << std::endl;
     return _tiles[yPos][xPos];
 }
