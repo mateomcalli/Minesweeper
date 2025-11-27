@@ -24,6 +24,7 @@ int main() {
                 window.close();
             }
 
+            // calls LeftClick() function
             if (event.type == sf::Event::MouseButtonPressed &&
                 event.mouseButton.button == sf::Mouse::Left)
             {
@@ -38,6 +39,7 @@ int main() {
                 } else board.FindTile(xPos, yPos).LeftClick();
             }
 
+            // calls RightClick() function
             else if (event.type == sf::Event::MouseButtonPressed &&
                 event.mouseButton.button == sf::Mouse::Right)
             {

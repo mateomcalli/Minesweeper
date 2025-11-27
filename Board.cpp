@@ -60,6 +60,7 @@ void Board::InitializeBoard() {
     unsigned int xPos = 0;
     unsigned int yPos = 0;
     unsigned int counter = 0;
+
     for (unsigned int i = 0; i < _rows; i++) {
         for (unsigned int j = 0; j < _cols; j++) {
             Tile newTile;
@@ -74,25 +75,122 @@ void Board::InitializeBoard() {
         xPos = 0;
         yPos += 32;
     }
-}
 
-void Board::DrawBoard(sf::RenderWindow &window) {
-    for (unsigned int i = 0; i < _tiles.size(); i++) {
-        for (unsigned int j = 0; j < _tiles[i].size(); j++) {
-            _tiles[i][j].DrawTexture(window, _tiles[i][j]._isHidden ? hiddenTile : revealedTile, j*32, i*32);
-            if (_tiles[i][j]._isFlagged) {
-                _tiles[i][j].DrawTexture(window, flag, j*32, i*32);
+    // populates adjTiles vectors
+    for (unsigned int i = 0; i < _rows; i++) {
+        for (unsigned int j = 0; j < _cols; j++) {
+            if (i == 0) {
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j]);
+                if (j == 0) {
+                    _tiles[i][j].adjTiles.push_back(&_tiles[i][j+1]);
+                    _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j+1]);
+                    continue;
+                }
+                if (j == _cols-1) {
+                    _tiles[i][j].adjTiles.push_back(&_tiles[i][j-1]);
+                    _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j-1]);
+                    continue;
+                }
+                _tiles[i][j].adjTiles.push_back(&_tiles[i][j+1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j+1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j-1]);
             }
-            if (_tiles[i][j]._hasMine) {
-                _tiles[i][j].DrawTexture(window, mine, j*32, i*32);
+            else if (i == _rows-1) {
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j]);
+                if (j == 0) {
+                    _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j+1]);
+                    _tiles[i][j].adjTiles.push_back(&_tiles[i][j+1]);
+                    continue;
+                }
+                if (j == _cols-1) {
+                    _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j-1]);
+                    _tiles[i][j].adjTiles.push_back(&_tiles[i][j-1]);
+                    continue;
+                }
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j+1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i][j+1]);
+            }
+            else if (j == 0) {
+                if (i == _rows-1) continue;
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j+1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i][j+1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j+1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j]);
+            }
+            else if (j == _cols-1) {
+                if (i == _rows-1) continue;
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j]);
+            }
+            else {
+                _tiles[i][j].adjTiles.push_back(&_tiles[i][j+1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j+1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i+1][j-1]);
+                _tiles[i][j].adjTiles.push_back(&_tiles[i-1][j+1]);
             }
         }
     }
 }
 
+void Board::DrawBoard(sf::RenderWindow &window) {
+    for (unsigned int i = 0; i < _tiles.size(); i++) {
+        for (unsigned int j = 0; j < _tiles[i].size(); j++) {
+            if (_tiles[i][j]._isHidden) {
+                _tiles[i][j].DrawTexture(window, hiddenTile, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 0) {
+                _tiles[i][j].DrawTexture(window, revealedTile, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 1) {
+                _tiles[i][j].DrawTexture(window, one, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 2) {
+                _tiles[i][j].DrawTexture(window, two, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 3) {
+                _tiles[i][j].DrawTexture(window, three, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 4) {
+                _tiles[i][j].DrawTexture(window, four, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 5) {
+                _tiles[i][j].DrawTexture(window, five, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 6) {
+                _tiles[i][j].DrawTexture(window, six, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 7) {
+                _tiles[i][j].DrawTexture(window, seven, j*32, i*32);
+            }
+            else if (_tiles[i][j].CheckNeighbors() == 8) {
+                _tiles[i][j].DrawTexture(window, eight, j*32, i*32);
+            }
+
+            if (_tiles[i][j]._isFlagged) {
+                _tiles[i][j].DrawTexture(window, flag, j*32, i*32);
+            }
+            // if (_tiles[i][j]._hasMine) {
+            //     _tiles[i][j].DrawTexture(window, mine, j*32, i*32);
+            // }
+        }
+    }
+}
+
 Tile& Board::FindTile(unsigned int xPos, unsigned int yPos) {
-    std::cout << yPos << std::endl;
-    std::cout << xPos << std::endl;
-    std::cout << _tiles[yPos][xPos].id << std::endl;
+    // std::cout << yPos << ',';
+    // std::cout << xPos << std::endl;
+    // std::cout << _tiles[yPos][xPos].id << std::endl;
+    // std::cout << _tiles[yPos][xPos].adjTiles.size() << std::endl;
     return _tiles[yPos][xPos];
 }

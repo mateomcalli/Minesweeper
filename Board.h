@@ -35,7 +35,6 @@ public:
     Board(unsigned int rows, unsigned int cols, unsigned int mines);
     void LoadTextures();
     void InitializeBoard(); // makes 2D vector with tiles
-    void DrawTexture(sf::RenderWindow &window, sf::Texture &texture, unsigned int xPos, unsigned int yPos);
     void DrawBoard(sf::RenderWindow &window); // draws tiles to screen, runs constantly
     Tile& FindTile(unsigned int xPos, unsigned int yPos);
 };
