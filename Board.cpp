@@ -61,6 +61,7 @@ void Board::InitializeBoard() {
     unsigned int yPos = 0;
     unsigned int counter = 0;
 
+    // populates _tiles 2d vector
     for (unsigned int i = 0; i < _rows; i++) {
         for (unsigned int j = 0; j < _cols; j++) {
             Tile newTile;
@@ -144,8 +145,41 @@ void Board::InitializeBoard() {
 }
 
 void Board::DrawBoard(sf::RenderWindow &window) {
+    // draws bottom buttons
+    sf::Sprite faceButton;
+    if (_gameStatus == 2) faceButton.setTexture(faceWin);
+    else if (_gameStatus == 3) faceButton.setTexture(faceLoss);
+    else faceButton.setTexture(face);
+    faceButton.setPosition(_cols*32/2-32,_rows*32);
+    window.draw(faceButton);
+
+    sf::Sprite debugButton;
+    debugButton.setTexture(debugTile);
+    debugButton.setPosition(_cols*32-256, _rows*32);
+    window.draw(debugButton);
+
+    sf::Sprite testOneButton;
+    testOneButton.setTexture(testOneTile);
+    testOneButton.setPosition(_cols*32-192, _rows*32);
+    window.draw(testOneButton);
+
+    sf::Sprite testTwoButton;
+    testTwoButton.setTexture(testTwoTile);
+    testTwoButton.setPosition(_cols*32-128, _rows*32);
+    window.draw(testTwoButton);
+
+    sf::Sprite testThreeButton;
+    testThreeButton.setTexture(testThreeTile);
+    testThreeButton.setPosition(_cols*32-64, _rows*32);
+    window.draw(testThreeButton);
+
+    // draws tiles, checks for loss
     for (unsigned int i = 0; i < _tiles.size(); i++) {
         for (unsigned int j = 0; j < _tiles[i].size(); j++) {
+            // checking
+            if (!_tiles[i][j]._isHidden && _tiles[i][j]._hasMine) _gameStatus = 3;
+
+            // drawing
             if (_tiles[i][j]._isHidden) {
                 _tiles[i][j].DrawTexture(window, hiddenTile, j*32, i*32);
             }
@@ -176,15 +210,25 @@ void Board::DrawBoard(sf::RenderWindow &window) {
             else if (_tiles[i][j].CheckNeighbors() == 8) {
                 _tiles[i][j].DrawTexture(window, eight, j*32, i*32);
             }
-
             if (_tiles[i][j]._isFlagged) {
                 _tiles[i][j].DrawTexture(window, flag, j*32, i*32);
             }
-            // if (_tiles[i][j]._hasMine) {
-            //     _tiles[i][j].DrawTexture(window, mine, j*32, i*32);
-            // }
+            if (_gameStatus == 3 || _gameStatus == 4) {
+                if (_tiles[i][j]._hasMine) {
+                    _tiles[i][j].DrawTexture(window, mine, j*32, i*32);
+                }
+            }
         }
     }
+}
+
+void Board::DebugButton() {
+    if (_gameStatus == 4) _gameStatus = 1;
+    else if (_gameStatus == 1) _gameStatus = 4;
+}
+
+unsigned int Board::GetGameStatus() {
+    return _gameStatus;
 }
 
 Tile& Board::FindTile(unsigned int xPos, unsigned int yPos) {

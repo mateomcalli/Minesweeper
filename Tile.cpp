@@ -17,18 +17,19 @@ unsigned int Tile::CheckNeighbors() {
 }
 
 void Tile::RecursiveReveal() {
-    this->_isHidden = false;
-    if (this->CheckNeighbors() != 0) {
+    if (_isFlagged) return;
+    _isHidden = false;
+    if (CheckNeighbors() != 0) {
         return;
     }
-    for (unsigned int i = 0; i < this->adjTiles.size(); i++) {
-        if (adjTiles[i]->_isHidden) {
-            if (adjTiles[i]->CheckNeighbors() == 0) adjTiles[i]->RecursiveReveal();
-            else adjTiles[i]->_isHidden = false;
-        }
+    for (unsigned int i = 0; i < adjTiles.size(); i++) {
+        if (!adjTiles[i]->_isHidden) continue;
+        if (adjTiles[i]->_isFlagged) continue;
+
+        if (adjTiles[i]->CheckNeighbors() == 0) adjTiles[i]->RecursiveReveal();
+        else adjTiles[i]->_isHidden = false;
     }
 }
-
 
 void Tile::LeftClick() {
     if (_isHidden) {
@@ -37,6 +38,7 @@ void Tile::LeftClick() {
                 RecursiveReveal();
             }
         }
+        if (!_isFlagged) _isHidden = false;
     }
 }
 

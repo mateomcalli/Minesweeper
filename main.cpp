@@ -34,9 +34,25 @@ int main() {
                 unsigned int xPos = mousePos.x/32;
                 unsigned int yPos = mousePos.y/32;
 
+                // handles clicks outside of tiles
                 if (xPos >= cols || yPos >= rows) {
-                    continue;
-                } else board.FindTile(xPos, yPos).LeftClick();
+                    if (mousePos.y <= rows*32+64) {
+                        if (cols*32/2-32 <= mousePos.x && mousePos.x <= cols*32/2+32) {
+                            board = Board(rows,cols,mines);
+                            board.InitializeBoard();
+                        }
+                        if (cols*32-256 <= mousePos.x && mousePos.x < cols*32-192) {
+                            board.DebugButton();
+                        }
+                    }
+                }
+
+                // handles other clicks (tiles)
+                else {
+                    if (board.GetGameStatus() == 1 || board.GetGameStatus() == 4) {
+                        board.FindTile(xPos, yPos).LeftClick();
+                    }
+                }
             }
 
             // calls RightClick() function
@@ -49,9 +65,17 @@ int main() {
                 unsigned int xPos = mousePos.x/32;
                 unsigned int yPos = mousePos.y/32;
 
+                // ignores clicks outside of game area
                 if (xPos >= cols || yPos >= rows) {
                     continue;
-                } else board.FindTile(xPos, yPos).RightClick();
+                }
+
+                // handles right clicks in game area
+                else {
+                    if (board.GetGameStatus() == 1 || board.GetGameStatus() == 4) {
+                        board.FindTile(xPos, yPos).RightClick();
+                    }
+                }
             }
         }
 

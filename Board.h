@@ -7,6 +7,7 @@ class Board {
     unsigned int _cols;
     unsigned int _mines;
     unsigned int _mineCounter;
+    unsigned int _gameStatus = 1;
     std::vector<bool> boolList;
     std::vector<std::vector<Tile>> _tiles;
 
@@ -36,5 +37,7 @@ public:
     void LoadTextures();
     void InitializeBoard(); // makes 2D vector with tiles
     void DrawBoard(sf::RenderWindow &window); // draws tiles to screen, runs constantly
+    void DebugButton();
+    unsigned int GetGameStatus();
     Tile& FindTile(unsigned int xPos, unsigned int yPos);
 };
