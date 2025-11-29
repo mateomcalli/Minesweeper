@@ -36,6 +36,7 @@ public:
     Board(unsigned int rows, unsigned int cols, unsigned int mines);
     void LoadTextures();
     void InitializeBoard(); // makes 2D vector with tiles
+    void DrawButtons(sf::RenderWindow &window); // draws bottom buttons
     void DrawBoard(sf::RenderWindow &window); // draws tiles to screen, runs constantly
     void DebugButton();
     unsigned int GetGameStatus();

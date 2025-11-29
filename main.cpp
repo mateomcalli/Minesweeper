@@ -80,6 +80,7 @@ int main() {
         }
 
         window.clear(sf::Color(200, 200, 200));
+        board.DrawButtons(window);
         board.DrawBoard(window);
         window.display();
     }

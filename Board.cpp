@@ -144,8 +144,7 @@ void Board::InitializeBoard() {
     }
 }
 
-void Board::DrawBoard(sf::RenderWindow &window) {
-    // draws bottom buttons
+void Board::DrawButtons(sf::RenderWindow &window) {
     sf::Sprite faceButton;
     if (_gameStatus == 2) faceButton.setTexture(faceWin);
     else if (_gameStatus == 3) faceButton.setTexture(faceLoss);
@@ -172,14 +171,23 @@ void Board::DrawBoard(sf::RenderWindow &window) {
     testThreeButton.setTexture(testThreeTile);
     testThreeButton.setPosition(_cols*32-64, _rows*32);
     window.draw(testThreeButton);
+}
 
-    // draws tiles, checks for loss
+void Board::DrawBoard(sf::RenderWindow &window) {
+    // draws tiles, checks for win/loss
+    unsigned int counter = 0;
     for (unsigned int i = 0; i < _tiles.size(); i++) {
         for (unsigned int j = 0; j < _tiles[i].size(); j++) {
-            // checking
+            // checking for loss
             if (!_tiles[i][j]._isHidden && _tiles[i][j]._hasMine) _gameStatus = 3;
 
-            // drawing
+            // add win check with counter here.
+            if (!_tiles[i][j]._isHidden) counter++;
+            if (_gameStatus == 2) {
+                if (_tiles[i][j]._isHidden) _tiles[i][j]._isFlagged = true;
+            }
+
+            // drawing based on mine neighbors
             if (_tiles[i][j]._isHidden) {
                 _tiles[i][j].DrawTexture(window, hiddenTile, j*32, i*32);
             }
@@ -210,15 +218,22 @@ void Board::DrawBoard(sf::RenderWindow &window) {
             else if (_tiles[i][j].CheckNeighbors() == 8) {
                 _tiles[i][j].DrawTexture(window, eight, j*32, i*32);
             }
+
+            // drawing flags
             if (_tiles[i][j]._isFlagged) {
                 _tiles[i][j].DrawTexture(window, flag, j*32, i*32);
             }
+
+            // draws mines if debug mode is on or loss
             if (_gameStatus == 3 || _gameStatus == 4) {
                 if (_tiles[i][j]._hasMine) {
                     _tiles[i][j].DrawTexture(window, mine, j*32, i*32);
                 }
             }
         }
+    }
+    if (counter >= _rows*_cols - _mines && _gameStatus != 3) {
+        _gameStatus = 2;
     }
 }
 
