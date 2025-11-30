@@ -50,13 +50,19 @@ int main() {
 
                         // test 1-3 buttons
                         if (cols*32-192 <= mousePos.x && mousePos.x < cols*32-128) {
-                            std::cout << "test1";
+                            board = Board(rows,cols,mines);
+                            std::string board1 = "boards/testboard1.brd";
+                            board.InitializeTestBoard(board1);
                         }
                         if (cols*32-128 <= mousePos.x && mousePos.x < cols*32-64) {
-                            std::cout << "test2";
+                            board = Board(rows,cols,mines);
+                            std::string board2 = "boards/testboard2.brd";
+                            board.InitializeTestBoard(board2);
                         }
                         if (cols*32-64 <= mousePos.x && mousePos.x <= cols*32) {
-                            std::cout << "test3";
+                            board = Board(rows,cols,mines);
+                            std::string board3 = "boards/testboard3.brd";
+                            board.InitializeTestBoard(board3);
                         }
                     }
                 }

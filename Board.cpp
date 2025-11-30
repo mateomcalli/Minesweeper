@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <random>
 #include <vector>
+#include <iostream>
 #include <fstream>
 #include "Board.h"
 #include "Tile.h"
@@ -148,15 +149,31 @@ void Board::InitializeTestBoard(std::string& path) {
     std::ifstream file(path);
     std::vector<bool> inBoolList;
     std::string line;
-    unsigned int lineCount = 0;
+    unsigned int mineCount = 0;
 
     while (std::getline(file, line)) {
         for (unsigned int i = 0; i < line.size(); i++) {
-            if (line[i] == '1') inBoolList.push_back(true);
+            if (line[i] == '1') {
+                inBoolList.push_back(true);
+                mineCount++;
+            }
             else inBoolList.push_back(false);
         }
-        lineCount++;
     }
+
+    _mines = mineCount;
+    boolList = inBoolList;
+
+    InitializeBoard();
+
+
+
+
+
+    // for (unsigned int i = 0; i < inBoolList.size(); i++) {
+    //     // if (i != 0 && i % 25 == 0) std::cout << inBoolList[i] << std::endl;
+    //     // else std::cout << inBoolList[i];
+    // }
 }
 
 void Board::DrawButtons(sf::RenderWindow &window) {
