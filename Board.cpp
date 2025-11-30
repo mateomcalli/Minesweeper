@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <random>
 #include <vector>
-#include <iostream>
+#include <fstream>
 #include "Board.h"
 #include "Tile.h"
 
@@ -9,7 +9,6 @@ Board::Board(unsigned int rows, unsigned int cols, unsigned int mines) {
     _rows = rows;
     _cols = cols;
     _mines = mines;
-    _mineCounter = mines;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -40,6 +39,7 @@ void Board::LoadTextures() {
     debugTile.loadFromFile("images/debug.png");
     flag.loadFromFile("images/flag.png");
     mine.loadFromFile("images/mine.png");
+    digits.loadFromFile("images/digits.png");
     one.loadFromFile("images/number_1.png");
     two.loadFromFile("images/number_2.png");
     three.loadFromFile("images/number_3.png");
@@ -144,7 +144,56 @@ void Board::InitializeBoard() {
     }
 }
 
+void Board::InitializeTestBoard(std::string& path) {
+    std::ifstream file(path);
+    std::vector<bool> inBoolList;
+    std::string line;
+    unsigned int lineCount = 0;
+
+    while (std::getline(file, line)) {
+        for (unsigned int i = 0; i < line.size(); i++) {
+            if (line[i] == '1') inBoolList.push_back(true);
+            else inBoolList.push_back(false);
+        }
+        lineCount++;
+    }
+}
+
 void Board::DrawButtons(sf::RenderWindow &window) {
+    int mainDigit = _mines - _flagCounter;
+
+    int digit1 = 0;
+    if (mainDigit < 0) digit1 = 10;
+    else digit1 = mainDigit / 100;
+    sf::Sprite hundredsDigit;
+    hundredsDigit.setTexture(digits);
+    sf::IntRect rectOne(digit1*21,0,21,32);
+    hundredsDigit.setTextureRect(rectOne);
+    hundredsDigit.setPosition(16, _rows*32);
+    window.draw(hundredsDigit);
+
+    int digit2 = 0;
+    if (mainDigit / 10 >= 10) digit2 = mainDigit / 10 % 10;
+    else if (mainDigit < 0 && mainDigit / 10 >= 10) digit2 = -mainDigit / 10 % 10;
+    else if (mainDigit < 0) digit2 = -mainDigit / 10;
+    else digit2 = mainDigit / 10;
+    sf::Sprite tensDigit;
+    tensDigit.setTexture(digits);
+    sf::IntRect rectTwo(digit2*21,0,21,32);
+    tensDigit.setTextureRect(rectTwo);
+    tensDigit.setPosition(37, _rows*32);
+    window.draw(tensDigit);
+
+    int digit3 = 0;
+    if (mainDigit < 0) digit3 = -mainDigit % 10;
+    else digit3 = mainDigit % 10;
+    sf::Sprite onesDigit;
+    onesDigit.setTexture(digits);
+    sf::IntRect rectThree(digit3*21,0,21,32);
+    onesDigit.setTextureRect(rectThree);
+    onesDigit.setPosition(58, _rows*32);
+    window.draw(onesDigit);
+
     sf::Sprite faceButton;
     if (_gameStatus == 2) faceButton.setTexture(faceWin);
     else if (_gameStatus == 3) faceButton.setTexture(faceLoss);
@@ -176,8 +225,12 @@ void Board::DrawButtons(sf::RenderWindow &window) {
 void Board::DrawBoard(sf::RenderWindow &window) {
     // draws tiles, checks for win/loss
     unsigned int counter = 0;
+    _flagCounter = 0;
     for (unsigned int i = 0; i < _tiles.size(); i++) {
         for (unsigned int j = 0; j < _tiles[i].size(); j++) {
+            // sets _flagCounter
+            if (_tiles[i][j]._isFlagged) _flagCounter++;
+
             // checking for loss
             if (!_tiles[i][j]._isHidden && _tiles[i][j]._hasMine) _gameStatus = 3;
 
